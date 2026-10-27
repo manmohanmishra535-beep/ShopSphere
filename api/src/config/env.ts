@@ -26,7 +26,27 @@ export const env = {
   cookieName: "ss_token",
   guestCookieName: "ss_guest",
   dataFile: process.env.DB_FILE ?? path.join(apiRoot, "data", "db.json"),
-  paymentProvider: process.env.PAYMENT_PROVIDER ?? "mock",
+
+  // Persistence. When MONGODB_URI is unset the JSON file stays the source of truth.
+  mongoUrl: process.env.MONGODB_URI?.trim() ?? "",
+  mongoDb: process.env.MONGODB_DB?.trim() ?? "",
+
+  // Cache. REDIS_URL enables the shared cache; otherwise an in-process TTL map is used.
+  redisUrl: process.env.REDIS_URL?.trim() ?? "",
+
+  // Payments. MOCK is the zero-config demo provider; razorpay enables live checkout.
+  paymentProvider: (process.env.PAYMENT_PROVIDER ?? "mock").toLowerCase(),
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID?.trim() ?? "",
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET?.trim() ?? "",
+  razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET?.trim() ?? "",
+
+  // Signed Cloudinary browser uploads.
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME?.trim() ?? "",
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY?.trim() ?? "",
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET?.trim() ?? "",
+  cloudinaryFolder: process.env.CLOUDINARY_UPLOAD_FOLDER?.trim() || "shopsphere/products",
+  cloudinaryUploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET?.trim() ?? "",
+
   seedDemoData: process.env.SEED_DEMO !== "false",
 };
 

@@ -14,11 +14,12 @@ import { hashQuery, newId, now, slugify } from "../../lib/ids.js";
 import { toProductCard as _card } from "../../lib/catalog.js";
 import { authenticate, requireRole } from "../../middleware/auth.js";
 import { validate } from "../../middleware/validate.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { badRequest, notFound } from "../../lib/errors.js";
 
 export const productsRouter = Router();
 
-productsRouter.get("/", (req, res) => {
+productsRouter.get("/", asyncHandler(async (req, res) => {
   const query = {
     q: typeof req.query.q === "string" ? req.query.q : undefined,
     category: typeof req.query.category === "string" ? req.query.category : undefined,
@@ -32,7 +33,7 @@ productsRouter.get("/", (req, res) => {
     limit: Math.min(48, Math.max(1, Number(req.query.limit ?? 12))),
   };
   const cacheKey = `cache:list:${hashQuery(query)}`;
-  const hit = cache.get<unknown>(cacheKey);
+  const hit = await cache.get<unknown>(cacheKey);
   if (hit) return res.json(hit);
 
   const { items, facets } = filterProducts(query);
@@ -67,14 +68,14 @@ productsRouter.get("/", (req, res) => {
       sort: query.sort,
     },
   };
-  cache.set(cacheKey, payload, 120);
+  await cache.set(cacheKey, payload, 120);
   res.json(payload);
-});
+}));
 
-productsRouter.get("/:slug", (req, res, next) => {
+productsRouter.get("/:slug", async (req, res, next) => {
   try {
     const key = `cache:product:${req.params.slug}`;
-    const hit = cache.get<Record<string, unknown>>(key);
+    const hit = await cache.get<Record<string, unknown>>(key);
     if (hit) return res.json(hit);
 
     const product = getDb().products.find(
@@ -103,7 +104,7 @@ productsRouter.get("/:slug", (req, res, next) => {
       },
       related,
     };
-    cache.set(key, payload, 600);
+    await cache.set(key, payload, 600);
     res.json(payload);
   } catch (error) {
     next(error);

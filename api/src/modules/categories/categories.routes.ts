@@ -5,19 +5,20 @@ import { cache, invalidateCatalog } from "../../lib/cache.js";
 import { categoryTree } from "../../lib/catalog.js";
 import { authenticate, requireRole } from "../../middleware/auth.js";
 import { validate } from "../../middleware/validate.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { badRequest, notFound } from "../../lib/errors.js";
 import { newId, now, slugify } from "../../lib/ids.js";
 
 export const categoriesRouter = Router();
 
-categoriesRouter.get("/", (_req, res) => {
-  const hit = cache.get<unknown>("cache:categories");
+categoriesRouter.get("/", asyncHandler(async (_req, res) => {
+  const hit = await cache.get<unknown>("cache:categories");
   if (hit) return res.json(hit);
   const tree = categoryTree();
   const payload = { data: tree };
-  cache.set("cache:categories", payload, 3600);
+  await cache.set("cache:categories", payload, 3600);
   res.json(payload);
-});
+}));
 
 const categorySchema = z.object({
   name: z.string().min(2).max(60),

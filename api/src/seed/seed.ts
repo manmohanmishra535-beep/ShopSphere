@@ -858,7 +858,7 @@ function buildReviews(users: User[], products: Product[], orders: Order[]): Revi
   return reviews;
 }
 
-function buildSettings(): Settings {
+export function buildSettings(): Settings {
   return {
     storeName: "ShopSphere",
     supportEmail: "help@shopsphere.in",
