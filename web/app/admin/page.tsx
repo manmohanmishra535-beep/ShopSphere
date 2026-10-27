@@ -30,6 +30,9 @@ export default async function AdminDashboard({
   const params = await searchParams;
   const days = ranges.includes(Number(params.days)) ? Number(params.days) : 30;
   const stats = await getAdminStats(days);
+  const averageDaily = stats ? Math.round(stats.kpis.revenue.value / days) : 0;
+  const bestDay = stats ? [...stats.revenueByDay].sort((a, b) => b.revenue - a.revenue)[0] : null;
+  const activeDays = stats ? stats.revenueByDay.filter((point) => point.revenue > 0).length : 0;
 
   const greeting = (() => {
     const hour = new Date().getHours();
@@ -58,6 +61,10 @@ export default async function AdminDashboard({
         description={`Performance for the last ${days} days. Figures update as orders are paid and fulfilled.`}
         actions={
           <>
+            <span className="hidden items-center gap-1.5 rounded-full border border-border bg-bg px-2.5 py-1 text-[10px] font-medium text-muted sm:inline-flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" />
+              Live data
+            </span>
             <div className="flex rounded-lg border border-border bg-bg p-0.5">
               {ranges.map((range) => (
                 <Link
@@ -80,7 +87,7 @@ export default async function AdminDashboard({
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="Revenue"
           value={formatINRCompact(stats.kpis.revenue.value)}
@@ -112,17 +119,34 @@ export default async function AdminDashboard({
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-        <section className="rounded-xl border border-border bg-bg p-4 sm:p-5">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <section className="rounded-2xl border border-border bg-bg p-5 shadow-[var(--shadow-card)]">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-semibold">Revenue trend</h2>
               <p className="text-xs text-muted">Paid, packed, shipped and delivered orders</p>
             </div>
+            <span className="rounded-full bg-surface px-2.5 py-1 text-[10px] font-medium text-muted">
+              Avg. {formatINR(averageDaily)}/day
+            </span>
           </div>
           <RevenueChart data={stats.revenueByDay} />
+          <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-4">
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted">Best day</p>
+              <p className="mt-1 text-[12px] font-semibold">{bestDay ? `${bestDay.label} · ${formatINR(bestDay.revenue)}` : "—"}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted">Orders / day</p>
+              <p className="price-num mt-1 text-[12px] font-semibold">{(stats.kpis.orders.value / days).toFixed(1)}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted">Days with sales</p>
+              <p className="price-num mt-1 text-[12px] font-semibold">{activeDays} / {days}</p>
+            </div>
+          </div>
         </section>
 
-        <section className="rounded-xl border border-border bg-bg p-4 sm:p-5">
+        <section className="rounded-2xl border border-border bg-bg p-5 shadow-[var(--shadow-card)]">
           <h2 className="text-sm font-semibold">Needs attention</h2>
           <p className="text-xs text-muted">Small tasks that keep the store moving</p>
           <div className="mt-4 space-y-2">
@@ -169,8 +193,8 @@ export default async function AdminDashboard({
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <section className="overflow-hidden rounded-xl border border-border bg-bg">
-          <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <section className="overflow-hidden rounded-2xl border border-border bg-bg shadow-[var(--shadow-card)]">
+          <header className="flex items-center justify-between border-b border-border bg-surface/35 px-5 py-3.5">
             <div>
               <h2 className="text-sm font-semibold">Top products</h2>
               <p className="text-[11px] text-muted">By units sold in this period</p>
@@ -198,8 +222,8 @@ export default async function AdminDashboard({
           )}
         </section>
 
-        <section className="overflow-hidden rounded-xl border border-border bg-bg">
-          <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <section className="overflow-hidden rounded-2xl border border-border bg-bg shadow-[var(--shadow-card)]">
+          <header className="flex items-center justify-between border-b border-border bg-surface/35 px-5 py-3.5">
             <div>
               <h2 className="text-sm font-semibold">Latest orders</h2>
               <p className="text-[11px] text-muted">Most recent activity across the store</p>
@@ -240,7 +264,7 @@ export default async function AdminDashboard({
           <Link
             key={action.href}
             href={action.href}
-            className="flex items-center gap-3 rounded-xl border border-border bg-bg p-4 transition-colors hover:border-primary/40 hover:bg-primary-subtle/30"
+            className="group flex items-center gap-3 rounded-2xl border border-border bg-bg p-4 shadow-[var(--shadow-card)] transition-[border-color,transform,box-shadow] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-pop)]"
           >
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary-subtle text-primary">
               <action.icon className="h-4 w-4" />

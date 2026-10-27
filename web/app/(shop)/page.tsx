@@ -178,7 +178,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[640px] pb-5 sm:pb-4">
+            <div className="relative mx-auto w-full max-w-[640px]">
               <div className="grid grid-cols-[1.42fr_0.78fr] gap-2.5 sm:gap-3.5">
                 <div className="relative">
                   <Link
@@ -252,23 +252,6 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="absolute -bottom-1 left-3 hidden items-center gap-2.5 rounded-2xl border border-border bg-bg/95 px-3.5 py-2.5 shadow-[var(--shadow-pop)] backdrop-blur sm:left-5 sm:flex">
-                <div className="flex -space-x-1.5">
-                  {[
-                    ["AR", "bg-[#eadbce] text-[#6d4939]"],
-                    ["RM", "bg-[#d9e2d7] text-[#405844]"],
-                    ["PK", "bg-[#e5d9e5] text-[#644a64]"],
-                  ].map(([initial, tint]) => (
-                    <span key={initial} className={`grid h-7 w-7 place-items-center rounded-full border-2 border-bg text-[9px] font-semibold ${tint}`}>
-                      {initial}
-                    </span>
-                  ))}
-                </div>
-                <div>
-                  <MiniRating />
-                  <p className="mt-1 text-[10px] font-medium text-muted">4.9 from 1,200+ reviews</p>
-                </div>
-              </div>
             </div>
           </div>
 

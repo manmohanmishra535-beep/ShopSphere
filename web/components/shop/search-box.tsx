@@ -119,7 +119,7 @@ export function SearchBox({
             }}
             onFocus={() => setOpen(true)}
             onKeyDown={onKeyDown}
-            placeholder="Search products, brands…"
+            placeholder="Search the edit…"
             aria-label="Search products"
             aria-expanded={showPanel}
             aria-controls="search-suggestions"
