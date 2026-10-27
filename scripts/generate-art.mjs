@@ -299,10 +299,11 @@ function shirt(p, env) {
     <clipPath id="shirtClip"><path d="${bodyPath}"/></clipPath>
   </defs>
   <g>
-    <path d="${bodyPath}" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.34" stroke-linejoin="round"/>
+    <path d="${bodyPath}" fill="url(#body)" stroke="${p.shade}" stroke-width="2.4" stroke-opacity="0.44" stroke-linejoin="round"/>
     <g clip-path="url(#shirtClip)"><rect x="260" y="230" width="290" height="540" fill="url(#linen)"/></g>
-    <path d="M360 254 L387 278 L400 294 L372 311 L350 276Z" fill="${p.light}"/>
-    <path d="M440 254 L413 278 L400 294 L428 311 L450 276Z" fill="${p.pale}"/>
+    <path d="M372 260 C384 288 416 288 428 260 C414 276 386 276 372 260Z" fill="${env.bottom}" stroke="${p.deep}" stroke-width="1.4" stroke-opacity="0.35"/>
+    <path d="M360 254 L387 278 L400 294 L372 311 L350 276Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.4"/>
+    <path d="M440 254 L413 278 L400 294 L428 311 L450 276Z" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.4"/>
     <path d="M400 294 L400 694" stroke="${p.shade}" stroke-width="3" opacity="0.5"/>
     <path d="M382 304 L382 686" stroke="${p.light}" stroke-width="1.5" opacity="0.5"/>
     ${[356, 412, 468, 524, 580, 636].map((y) => `<circle cx="400" cy="${y}" r="4.1" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.3"/>`).join("")}
