@@ -1,6 +1,6 @@
 import { createApp } from "./app.js";
 import { env } from "./config/env.js";
-import { closeDb, initDb, persist } from "./lib/db.js";
+import { closeDb, flushDb, hasPendingWrites, initDb } from "./lib/db.js";
 import { expiryJob } from "./lib/orders.js";
 import { cache } from "./lib/cache.js";
 import { assertPaymentConfig, getPaymentProvider } from "./lib/payments/index.js";
@@ -38,8 +38,10 @@ async function main() {
     }
   }, 60_000);
 
-  // Periodically flush any pending writes.
-  setInterval(() => persist(), 30_000);
+  // Periodic safety net; ordinary mutations already schedule a debounced flush.
+  setInterval(() => {
+    if (hasPendingWrites()) void flushDb();
+  }, 30_000);
 }
 
 main().catch((error) => {

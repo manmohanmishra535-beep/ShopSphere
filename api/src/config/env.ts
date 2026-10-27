@@ -4,7 +4,8 @@ import { loadEnvFile } from "node:process";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const apiRoot = path.resolve(here, "..");
+// src/config in development, dist/config after `tsc`; both resolve to api/.
+const apiRoot = path.resolve(here, "../..");
 
 // Load the first .env we find so `npm run dev` picks up local overrides.
 for (const file of [path.join(apiRoot, ".env"), path.resolve(apiRoot, "..", ".env"), path.resolve(process.cwd(), ".env")]) {
@@ -25,7 +26,7 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET ?? "shopsphere-dev-secret-change-me",
   cookieName: "ss_token",
   guestCookieName: "ss_guest",
-  dataFile: process.env.DB_FILE ?? path.join(apiRoot, "data", "db.json"),
+  dataFile: process.env.DB_FILE ?? path.join(apiRoot, "src", "data", "db.json"),
 
   // Persistence. When MONGODB_URI is unset the JSON file stays the source of truth.
   mongoUrl: process.env.MONGODB_URI?.trim() ?? "",

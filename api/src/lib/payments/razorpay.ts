@@ -129,7 +129,16 @@ export class RazorpayPaymentProvider implements PaymentProvider {
     if (payment.amount !== input.order.total || payment.currency !== "INR") {
       throw new AppError(400, "PAYMENT_VERIFICATION_FAILED", "Payment amount does not match the order");
     }
-    if (!["captured", "authorized"].includes(payment.status)) {
+    if (payment.status === "authorized") {
+      // Auto-capture is requested on the order, but capture explicitly if the
+      // provider left the payment authorised (for example after a retry).
+      await this.request<RazorpayPayment>(`/payments/${encodeURIComponent(payment.id)}/capture`, {
+        method: "POST",
+        body: JSON.stringify({ amount: payment.amount, currency: payment.currency }),
+      });
+      payment.status = "captured";
+    }
+    if (payment.status !== "captured") {
       throw new AppError(400, "PAYMENT_VERIFICATION_FAILED", `Payment is ${payment.status}`);
     }
 

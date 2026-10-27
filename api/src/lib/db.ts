@@ -67,7 +67,19 @@ async function seedDatabase(): Promise<Database> {
 
 function writeJsonFile(data: Database): void {
   fs.mkdirSync(path.dirname(env.dataFile), { recursive: true });
-  fs.writeFileSync(env.dataFile, JSON.stringify(data, null, 2));
+  // Write-then-rename keeps the previous snapshot intact if the disk fills up.
+  const tempFile = `${env.dataFile}.tmp`;
+  try {
+    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2));
+    fs.renameSync(tempFile, env.dataFile);
+  } catch (error) {
+    try {
+      fs.rmSync(tempFile, { force: true });
+    } catch {
+      // Ignore cleanup errors.
+    }
+    throw error;
+  }
 }
 
 async function ensureFile(): Promise<Database> {
@@ -135,7 +147,7 @@ async function writeMongoSnapshot(db: Db, data: Database): Promise<void> {
           items.map((item) => ({
             replaceOne: {
               filter: { _id: item.id },
-              replacement: { ...(item as unknown as Document), _id: item.id },
+              replacement: item as unknown as Document,
               upsert: true,
             },
           })),
@@ -150,7 +162,7 @@ async function writeMongoSnapshot(db: Db, data: Database): Promise<void> {
     .collection<MongoRecord>(SETTINGS_COLLECTION)
     .replaceOne(
       { _id: SETTINGS_ID },
-      { ...(data.settings as unknown as MongoRecord), _id: SETTINGS_ID },
+      data.settings as unknown as MongoRecord,
       { upsert: true }
     );
 }
@@ -184,6 +196,15 @@ async function flush(): Promise<void> {
   return flushing;
 }
 
+function defaultMongoDatabase(uri: string): string {
+  try {
+    const fromUri = new URL(uri).pathname.replace(/^\/+/, "");
+    return fromUri || "shopsphere";
+  } catch {
+    return "shopsphere";
+  }
+}
+
 export async function initDb(): Promise<Database> {
   if (database) return database;
 
@@ -201,7 +222,7 @@ export async function initDb(): Promise<Database> {
     }
 
     mongoClient = client;
-    mongoDb = env.mongoDb ? client.db(env.mongoDb) : client.db();
+    mongoDb = client.db(env.mongoDb || defaultMongoDatabase(env.mongoUrl));
     await createIndexes(mongoDb);
     database = await loadMongo(mongoDb);
 
@@ -250,7 +271,13 @@ export async function flushDb(): Promise<void> {
   await flush();
 }
 
+export function hasPendingWrites(): boolean {
+  return Boolean(writeTimer) || Boolean(flushing) || queued;
+}
+
 export async function resetDb(): Promise<Database> {
+  // `npm run seed` can target MongoDB without booting the HTTP server.
+  if (env.mongoUrl && !mongoDb) await initDb();
   const seeded = await seedDatabase();
   database = seeded;
   await writeSnapshot();

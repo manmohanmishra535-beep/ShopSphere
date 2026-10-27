@@ -18,7 +18,7 @@ export class MockPaymentProvider implements PaymentProvider {
   async createIntent(order: Order): Promise<PaymentIntent> {
     return {
       provider: this.name,
-      providerOrderId: `pay_${newId("mock").slice(4, 20)}`,
+      providerOrderId: `pay_${newId("mock").replace(/^mock_/, "").slice(0, 16)}`,
       amount: order.total,
       currency: "INR",
       keyId: "rzp_test_shopsphere",

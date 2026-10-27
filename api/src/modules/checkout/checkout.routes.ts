@@ -4,7 +4,7 @@ import { authenticate } from "../../middleware/auth.js";
 import { validate } from "../../middleware/validate.js";
 import { getDb, persist } from "../../lib/db.js";
 import { cartTotals, getCartDocument } from "../../lib/catalog.js";
-import { badRequest, notFound, outOfStock } from "../../lib/errors.js";
+import { AppError, badRequest, notFound, outOfStock } from "../../lib/errors.js";
 import { newId, now } from "../../lib/ids.js";
 import { cache, invalidateCatalog } from "../../lib/cache.js";
 import {
@@ -17,7 +17,6 @@ import {
   toOrderItem,
 } from "../../lib/orders.js";
 import { getPaymentProvider, type PaymentIntent } from "../../lib/payments/index.js";
-import { AppError } from "../../lib/errors.js";
 import type { Order } from "../../types.js";
 
 export const checkoutRouter = Router();
@@ -253,9 +252,9 @@ webhooksRouter.post("/razorpay", async (req, res, next) => {
     const dedupeKey = event.eventId ? `webhook:${event.eventId}` : null;
     if (dedupeKey && (await cache.get(dedupeKey))) return res.json({ received: true, duplicate: true });
 
-    // Razorpay can deliver authorised/failed events too; only captured money
-    // should commit the sale. Mock payloads omit the status.
-    const payable = !event.status || ["captured", "authorized"].includes(event.status);
+    // Mock payloads omit the status. Razorpay only commits captured payments;
+    // authorised payments are captured by the client verification path first.
+    const payable = !event.status || event.status === "captured";
     if (event.providerOrderId && payable) {
       const order = getDb().orders.find((o) => o.payment.providerOrderId === event.providerOrderId);
       if (order && event.amount !== undefined && event.amount !== order.total) {

@@ -67,7 +67,15 @@ class MemoryCache implements CacheStore {
 }
 
 class RedisCache implements CacheStore {
-  private client = createClient({ url: env.redisUrl });
+  private client = createClient({
+    url: env.redisUrl,
+    socket: {
+      connectTimeout: 4_000,
+      // Fail fast at startup (and after repeated outages) instead of retrying forever.
+      reconnectStrategy: (retries) =>
+        retries > 4 ? new Error("Redis is unavailable") : Math.min(250 * (retries + 1), 1_000),
+    },
+  });
 
   constructor() {
     this.client.on("error", (error) => console.error("[cache] Redis error", error));
@@ -119,7 +127,12 @@ class RedisCache implements CacheStore {
   }
 
   async close(): Promise<void> {
-    if (this.client.isOpen) await this.client.quit();
+    try {
+      if (this.client.isOpen) await this.client.quit();
+    } catch {
+      // Ignore and destroy below.
+    }
+    this.client.destroy();
   }
 }
 
