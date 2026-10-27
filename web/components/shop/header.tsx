@@ -83,14 +83,14 @@ export function Header({ user, categories }: { user: User | null; categories: Ca
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg/90 backdrop-blur-md">
-      <div className="bg-[#0f172a] text-white">
-        <div className="container-shop flex h-8 items-center justify-center gap-2 text-[11px] tracking-wide text-white/80">
+    <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-xl supports-[backdrop-filter]:bg-bg/75">
+      <div className="bg-[#0e1424] text-white">
+        <div className="container-shop flex h-8 items-center justify-center gap-2 text-[11px] tracking-wide text-white/75">
           <Sparkles className="h-3 w-3 text-[#a5b4fc]" />
           <span>Free shipping over ₹999</span>
-          <span className="text-white/30">·</span>
+          <span className="text-white/25">·</span>
           <span>7-day easy returns</span>
-          <span className="hidden text-white/30 sm:inline">·</span>
+          <span className="hidden text-white/25 sm:inline">·</span>
           <span className="hidden sm:inline">Secure payments</span>
         </div>
       </div>
@@ -113,8 +113,8 @@ export function Header({ user, categories }: { user: User | null; categories: Ca
                 <Link
                   href={category.slug === "sale" ? "/products?category=sale" : `/products?category=${category.slug}`}
                   className={cn(
-                    "flex h-16 items-center gap-1 px-3 text-[13px] font-medium transition-colors",
-                    category.slug === "sale" ? "text-sale" : "text-text/80 hover:text-text"
+                    "relative flex h-16 items-center gap-1 px-3 text-[13px] font-medium transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-200 hover:after:scale-x-100",
+                    category.slug === "sale" ? "text-sale after:bg-sale" : "text-text/80 hover:text-text"
                   )}
                 >
                   {category.name}
@@ -150,7 +150,7 @@ export function Header({ user, categories }: { user: User | null; categories: Ca
             ))}
           </nav>
 
-          <div className="mx-auto hidden max-w-sm flex-1 md:block lg:max-w-[360px]">
+          <div className="mx-auto hidden max-w-sm flex-1 md:block lg:max-w-[390px]">
             <SearchBox />
           </div>
 

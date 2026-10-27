@@ -1,36 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 760" width="640" height="760" role="img">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#243B36"/><stop offset="1" stop-color="#0D1F1B"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#f5f1e9"/>
+      <stop offset="1" stop-color="#e7dfd2"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#B9C6A4"/><stop offset="1" stop-color="#E4E8D6"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="30%" cy="20%" r="80%">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <radialGradient id="glow" cx="32%" cy="18%" r="78%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dab078"/>
+      <stop offset="0.55" stop-color="#d3a15e"/>
+      <stop offset="1" stop-color="#ad844d"/>
+    </linearGradient>
+    <linearGradient id="bodySoft" x1="0" y1="0" x2="1" y2="0.7">
+      <stop offset="0" stop-color="#e2c195"/>
+      <stop offset="1" stop-color="#d3a15e"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3eee2"/>
+      <stop offset="0.35" stop-color="#cdbfa6"/>
+      <stop offset="0.62" stop-color="#f8f3e8"/>
+      <stop offset="1" stop-color="#9d8b70"/>
+    </linearGradient>
     <filter id="grain">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.86" numOctaves="2" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer>
+      <feComponentTransfer><feFuncA type="linear" slope="0.11"/></feComponentTransfer>
     </filter>
-    <filter id="soft"><feGaussianBlur stdDeviation="28"/></filter>
+    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
+    
   </defs>
   <rect width="640" height="760" fill="url(#bg)"/>
   <rect width="640" height="760" fill="url(#glow)"/>
-  <g filter="url(#soft)" opacity="0.5">
-    <circle cx="499.20000000000005" cy="121.60000000000001" r="198.23495029330255" fill="#E4E8D6" opacity="0.35"/>
+  <circle cx="513.8773756623268" cy="83.6" r="115.19999999999999" fill="#efe0ca" opacity="0.55"/>
+  <path d="M 108.79999999999998 642.1999999999999 L 108.79999999999998 258.40000000000003 C 108.79999999999998 121.60000000000001 531.2 121.60000000000001 531.2 258.40000000000003 L 531.2 642.1999999999999 Z" fill="#efe0ca" opacity="0.58"/>
+  <path d="M 109.79999999999998 642.1999999999999 L 109.79999999999998 258.40000000000003 C 109.79999999999998 121.60000000000001 530.2 121.60000000000001 530.2 258.40000000000003 L 530.2 642.1999999999999" fill="none" stroke="#cfc3b1" stroke-width="1.5" opacity="0.8"/>
+  <line x1="64" y1="642.1999999999999" x2="576" y2="642.1999999999999" stroke="#cfc3b1" stroke-width="1.5" opacity="0.9"/>
+  <ellipse cx="320" cy="650.1999999999999" rx="160" ry="16.72" fill="#2f2a24" opacity="0.14" filter="url(#blur)"/>
+  <g transform="translate(320 380) scale(0.8 0.76) translate(-400 -500)">
+    <g transform="translate(400 500) rotate(-1.2) scale(1) translate(-400 -500)"><g>
+    <rect x="332" y="466" width="136" height="278" rx="26" fill="#9a7645" opacity="0.42"/>
+    <rect x="342" y="472" width="116" height="266" rx="21" fill="url(#bodySoft)" opacity="0.8"/>
+    <rect x="354" y="520" width="92" height="150" rx="7" fill="#f1e1cb" opacity="0.9"/>
+    <rect x="368" y="540" width="64" height="4" rx="2" fill="#725733" opacity="0.4"/>
+    <rect x="368" y="554" width="44" height="3" rx="1.5" fill="#725733" opacity="0.25"/>
+    <rect x="368" y="628" width="54" height="3" rx="1.5" fill="#725733" opacity="0.25"/>
+    <rect x="365" y="414" width="70" height="64" rx="10" fill="#725733"/>
+    <rect x="372" y="348" width="56" height="72" rx="9" fill="#725733" opacity="0.8"/>
+    <rect x="382" y="316" width="36" height="38" rx="8" fill="#725733"/>
+    <rect x="391" y="280" width="18" height="42" rx="8" fill="#725733"/>
+    <path d="M360 492 L360 706" stroke="#e2c195" stroke-width="8" opacity="0.2"/>
+    <path d="M446 502 C454 538 454 584 447 620" fill="none" stroke="#e2c195" stroke-width="3" opacity="0.18"/>
+    <circle cx="400" cy="578" r="19" fill="none" stroke="#9a7645" stroke-width="2" opacity="0.4"/>
+    <path d="M400 560 L400 596 M383 578 L417 578" stroke="#9a7645" stroke-width="1.5" opacity="0.35"/>
+  </g></g>
   </g>
-  <g transform="rotate(-1.9398748874664307 239.04396815598008 385.74897871539)">
-    <ellipse cx="239.04396815598008" cy="385.74897871539" rx="232.21808462929727" ry="305.8482090239525" fill="url(#accent)" opacity="0.9"/>
-    <ellipse cx="284.3548139373064" cy="357.4297001020611" rx="141.59639306664468" ry="220.89037318396572" fill="#0D1F1B" opacity="0.22"/>
-    <path d="M -44.14881797730928 612.3032076220215 C 154.08613231599327 739.7399613820016, 380.64036122262473 541.5050110886991, 522.2367542892695 640.6224862353505" stroke="#F2F5EA" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
-  </g>
-  <circle cx="197.13815718889236" cy="456.8522761343047" r="159.21009464263918" fill="none" stroke="#F2F5EA" stroke-opacity="0.35" stroke-width="1.5"/>
-  <circle cx="197.13815718889236" cy="456.8522761343047" r="98.71025867843629" fill="#F2F5EA" opacity="0.08"/>
-  <g stroke="#F2F5EA" stroke-opacity="0.22" stroke-width="1">
-    <line x1="51.2" y1="653.6" x2="588.8000000000001" y2="653.6"/>
-    <line x1="51.2" y1="45.6" x2="51.2" y2="121.60000000000001"/>
-  </g>
-  <rect width="640" height="760" filter="url(#grain)" opacity="0.5"/>
+  <rect width="640" height="760" filter="url(#grain)" opacity="0.72"/>
 </svg>

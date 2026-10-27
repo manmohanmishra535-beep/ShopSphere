@@ -65,6 +65,7 @@ export interface ProductCard {
   availableStock: number;
   inStock: boolean;
   badge: "new" | "sale" | "bestseller" | null;
+  colors: { name: string; hex: string }[];
   tags: string[];
   categorySlug: string;
   createdAt: string;

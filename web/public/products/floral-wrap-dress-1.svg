@@ -1,36 +1,70 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4A3524"/><stop offset="1" stop-color="#21160D"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#f5f1e9"/>
+      <stop offset="1" stop-color="#e7dfd2"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#E0B47C"/><stop offset="1" stop-color="#F3DFC0"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="30%" cy="20%" r="80%">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <radialGradient id="glow" cx="32%" cy="18%" r="78%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#49546d"/>
+      <stop offset="0.55" stop-color="#263451"/>
+      <stop offset="1" stop-color="#1f2b42"/>
+    </linearGradient>
+    <linearGradient id="bodySoft" x1="0" y1="0" x2="1" y2="0.7">
+      <stop offset="0" stop-color="#70798c"/>
+      <stop offset="1" stop-color="#263451"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3eee2"/>
+      <stop offset="0.35" stop-color="#cdbfa6"/>
+      <stop offset="0.62" stop-color="#f8f3e8"/>
+      <stop offset="1" stop-color="#9d8b70"/>
+    </linearGradient>
     <filter id="grain">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.86" numOctaves="2" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer>
+      <feComponentTransfer><feFuncA type="linear" slope="0.11"/></feComponentTransfer>
     </filter>
-    <filter id="soft"><feGaussianBlur stdDeviation="28"/></filter>
+    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
+    
   </defs>
   <rect width="800" height="1000" fill="url(#bg)"/>
   <rect width="800" height="1000" fill="url(#glow)"/>
-  <g filter="url(#soft)" opacity="0.5">
-    <circle cx="624" cy="160" r="201.9501984514296" fill="#F3DFC0" opacity="0.35"/>
+  <circle cx="696.6218053735793" cy="110" r="144" fill="#efdbe0" opacity="0.55"/>
+  <path d="M 136 845 L 136 340 C 136 160 664 160 664 340 L 664 845 Z" fill="#efdbe0" opacity="0.58"/>
+  <path d="M 137 845 L 137 340 C 137 160 663 160 663 340 L 663 845" fill="none" stroke="#cfc3b1" stroke-width="1.5" opacity="0.8"/>
+  <line x1="80" y1="845" x2="720" y2="845" stroke="#cfc3b1" stroke-width="1.5" opacity="0.9"/>
+  <ellipse cx="400" cy="853" rx="200" ry="22" fill="#2f2a24" opacity="0.14" filter="url(#blur)"/>
+  <g transform="translate(400 500) scale(1 1) translate(-400 -500)">
+    <g transform="translate(400 500) rotate(-1.2) scale(1) translate(-400 -500)"><defs>
+    <clipPath id="dressClip"><path d="M332 268 C348 244 366 240 382 258 C390 268 410 268 418 258 C434 240 452 244 468 268 L522 304 L504 376 L466 360 L494 754 C430 778 370 778 306 754 L334 360 L296 376 L278 304 Z"/></clipPath>
+    <pattern id="floral" width="58" height="58" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)">
+      <g fill="#70798c" opacity="0.78">
+        <circle cx="16" cy="16" r="3.2"/><circle cx="10" cy="21" r="2.5"/><circle cx="20" cy="23" r="2.4"/>
+        <circle cx="42" cy="42" r="2.6"/><circle cx="37" cy="47" r="2"/><circle cx="47" cy="48" r="2.2"/>
+      </g>
+      <path d="M24 25 C31 17 39 20 40 27 C33 34 26 32 24 25Z" fill="#babec7" opacity="0.5"/>
+      <path d="M5 39 C12 33 19 37 19 44 C12 50 6 47 5 39Z" fill="#babec7" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <g>
+    <path d="M332 268 C348 244 366 240 382 258 C390 268 410 268 418 258 C434 240 452 244 468 268 L522 304 L504 376 L466 360 L494 754 C430 778 370 778 306 754 L334 360 L296 376 L278 304 Z" fill="url(#body)"/>
+    <g clip-path="url(#dressClip)"><rect x="260" y="230" width="300" height="570" fill="url(#floral)"/></g>
+    <path d="M382 258 L400 326 L418 258 C410 270 390 270 382 258Z" fill="#151c2c" opacity="0.82"/>
+    <path d="M400 326 C368 354 341 386 323 438 C371 451 430 447 476 429 C452 384 429 352 400 326Z" fill="#70798c" opacity="0.35"/>
+    <path d="M335 430 C380 447 425 446 469 429" fill="none" stroke="#1c263b" stroke-width="4" opacity="0.72"/>
+    <path d="M383 438 C361 455 344 474 338 499 C362 492 381 481 393 465Z" fill="#1c263b" opacity="0.58"/>
+    <path d="M429 436 C450 449 461 463 467 486 C447 481 431 471 420 459Z" fill="#babec7" opacity="0.6"/>
+    <path d="M348 566 C376 574 397 580 414 597" fill="none" stroke="#70798c" stroke-width="3" opacity="0.3"/>
+    <path d="M452 603 C434 616 417 625 398 628" fill="none" stroke="#151c2c" stroke-width="2.5" opacity="0.22"/>
+    <path d="M330 708 C362 719 438 720 470 709" fill="none" stroke="#70798c" stroke-width="2" opacity="0.26"/>
+    <path d="M305 754 C370 778 430 778 494 754" fill="none" stroke="#151c2c" stroke-width="3" opacity="0.2"/>
+    <path d="M334 360 L355 690 M466 360 L445 690" fill="none" stroke="#151c2c" stroke-width="2" opacity="0.1"/>
+  </g></g>
   </g>
-  <g transform="rotate(7.758793327957392 342.1802364476025 445.42915811762214)">
-    <ellipse cx="342.1802364476025" cy="445.42915811762214" rx="236.57023247167467" ry="311.5803061822057" fill="url(#accent)" opacity="0.9"/>
-    <ellipse cx="388.3402818079293" cy="416.5791297674179" rx="144.25014175102115" ry="225.030221131593" fill="#21160D" opacity="0.22"/>
-    <path d="M 53.67995294556022 676.229384919256 C 255.63015139698985 806.054512495175, 486.43037819862366 604.1043140437454, 630.6805199496448 705.0794132694602" stroke="#FFF6E8" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
-  </g>
-  <circle cx="479.9648041464388" cy="743.8389800256119" r="233.9690154194832" fill="none" stroke="#FFF6E8" stroke-opacity="0.35" stroke-width="1.5"/>
-  <circle cx="479.9648041464388" cy="743.8389800256119" r="145.0607895600796" fill="#FFF6E8" opacity="0.08"/>
-  <g stroke="#FFF6E8" stroke-opacity="0.22" stroke-width="1">
-    <line x1="64" y1="860" x2="736" y2="860"/>
-    <line x1="64" y1="60" x2="64" y2="160"/>
-  </g>
-  <rect width="800" height="1000" filter="url(#grain)" opacity="0.5"/>
+  <rect width="800" height="1000" filter="url(#grain)" opacity="0.72"/>
 </svg>

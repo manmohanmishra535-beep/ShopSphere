@@ -1,4 +1,5 @@
 import { getDb } from "./db.js";
+import { productColours } from "./colors.js";
 import type { Cart, Category, Product, Variant } from "../types.js";
 
 export interface ProductCard {
@@ -16,6 +17,7 @@ export interface ProductCard {
   availableStock: number;
   inStock: boolean;
   badge: "new" | "sale" | "bestseller" | null;
+  colors: { name: string; hex: string }[];
   tags: string[];
   categorySlug: string;
   createdAt: string;
@@ -50,6 +52,7 @@ export function toProductCard(product: Product): ProductCard {
     availableStock: available,
     inStock: available > 0 && product.status === "active",
     badge: discount > 0 ? "sale" : product.tags.includes("new") ? "new" : product.tags.includes("bestseller") ? "bestseller" : null,
+    colors: productColours(product),
     tags: product.tags,
     categorySlug: category?.slug ?? "",
     createdAt: product.createdAt,
