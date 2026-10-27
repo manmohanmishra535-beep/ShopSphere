@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 760" width="640" height="760" role="img">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A3524"/><stop offset="1" stop-color="#21160D"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E0B47C"/><stop offset="1" stop-color="#F3DFC0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="20%" r="80%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="28"/></filter>
+  </defs>
+  <rect width="640" height="760" fill="url(#bg)"/>
+  <rect width="640" height="760" fill="url(#glow)"/>
+  <g filter="url(#soft)" opacity="0.5">
+    <circle cx="499.20000000000005" cy="121.60000000000001" r="167.59370693087575" fill="#F3DFC0" opacity="0.35"/>
+  </g>
+  <g transform="rotate(23.115273378789425 283.74697175621986 259.7722503747791)">
+    <ellipse cx="283.74697175621986" cy="259.7722503747791" rx="196.32405669045446" ry="258.57314783620836" fill="url(#accent)" opacity="0.9"/>
+    <ellipse cx="322.05410476899146" cy="235.83029224179685" rx="119.70979066491127" ry="186.74727343726158" fill="#21160D" opacity="0.22"/>
+    <path d="M 44.32739042639733 451.3079154386371 C 211.9210973572731 559.0467270370573, 403.45676242113115 391.4530201061815, 523.1665530860424 475.2498735716194" stroke="#FFF6E8" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
+  </g>
+  <circle cx="335.8502504378557" cy="525.2567712031305" r="161.44467415809632" fill="none" stroke="#FFF6E8" stroke-opacity="0.35" stroke-width="1.5"/>
+  <circle cx="335.8502504378557" cy="525.2567712031305" r="100.09569797801971" fill="#FFF6E8" opacity="0.08"/>
+  <g stroke="#FFF6E8" stroke-opacity="0.22" stroke-width="1">
+    <line x1="51.2" y1="653.6" x2="588.8000000000001" y2="653.6"/>
+    <line x1="51.2" y1="45.6" x2="51.2" y2="121.60000000000001"/>
+  </g>
+  <rect width="640" height="760" filter="url(#grain)" opacity="0.5"/>
+</svg>

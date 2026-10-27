@@ -1,0 +1,22 @@
+{
+  "name": "shopsphere",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ShopSphere — full-stack e-commerce storefront and admin console",
+  "workspaces": [
+    "web",
+    "api"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev -w api",
+    "dev:web": "npm run dev -w web",
+    "build": "npm run build -w api && npm run build -w web",
+    "start": "npm run start -w api",
+    "seed": "npm run seed -w api",
+    "typecheck": "npm run typecheck -w api && npm run typecheck -w web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
