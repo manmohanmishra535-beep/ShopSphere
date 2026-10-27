@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import crypto from "node:crypto";
 import { env } from "./config/env.js";
 import { getDb } from "./lib/db.js";
+import { cache } from "./lib/cache.js";
 import { errorHandler, notFoundHandler } from "./middleware/error.js";
 import { rateLimit } from "./middleware/rateLimit.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
@@ -46,7 +47,13 @@ export function createApp() {
       credentials: true,
     })
   );
-  app.use(express.json({ limit: "1mb" }));
+  app.use(express.json({
+    limit: "1mb",
+    verify: (req, _res, buffer) => {
+      // Webhooks need the exact bytes to verify the provider HMAC.
+      (req as unknown as { rawBody?: Buffer }).rawBody = Buffer.from(buffer);
+    },
+  }));
   app.use(cookieParser());
   app.use(rateLimit({ limit: 600, windowSeconds: 60, key: "global" }));
 
@@ -57,6 +64,12 @@ export function createApp() {
       version: "1.0.0",
       uptime: Math.round(process.uptime()),
       data: { products: db.products.length, orders: db.orders.length, users: db.users.length },
+      adapters: {
+        database: env.mongoUrl ? "mongodb" : "json",
+        cache: cache.info().driver,
+        payments: env.paymentProvider,
+        media: env.cloudinaryCloudName ? "cloudinary" : "demo",
+      },
       time: new Date().toISOString(),
     });
   });

@@ -36,6 +36,9 @@ type ArrayCollection = (typeof ARRAY_COLLECTIONS)[number];
 const SETTINGS_COLLECTION = "settings";
 const SETTINGS_ID = "singleton";
 
+/** MongoDB `_id` is a string (our domain ids), not an ObjectId. */
+type MongoRecord = Document & { _id: string };
+
 let database: Database | null = null;
 let writeTimer: NodeJS.Timeout | null = null;
 let flushing: Promise<void> | null = null;
@@ -106,14 +109,14 @@ async function createIndexes(db: Db): Promise<void> {
 
 async function loadMongo(db: Db): Promise<Database> {
   const rows = await Promise.all(
-    ARRAY_COLLECTIONS.map((key) => db.collection(key).find({}).toArray())
+    ARRAY_COLLECTIONS.map((key) => db.collection<MongoRecord>(key).find({}).toArray())
   );
   const loaded = emptyDatabase() as unknown as Record<string, unknown>;
   ARRAY_COLLECTIONS.forEach((key, index) => {
     loaded[key] = rows[index].map(({ _id: _ignored, ...rest }) => rest);
   });
 
-  const settings = await db.collection(SETTINGS_COLLECTION).findOne({ _id: SETTINGS_ID });
+  const settings = await db.collection<MongoRecord>(SETTINGS_COLLECTION).findOne({ _id: SETTINGS_ID });
   if (settings) {
     const { _id: _ignored, ...rest } = settings;
     loaded.settings = { ...buildSettings(), ...rest };
@@ -126,7 +129,7 @@ async function writeMongoSnapshot(db: Db, data: Database): Promise<void> {
   await Promise.all(
     ARRAY_COLLECTIONS.map(async (key) => {
       const items = data[key] as Array<{ id: string }>;
-      const collection = db.collection(key);
+      const collection = db.collection<MongoRecord>(key);
       if (items.length > 0) {
         await collection.bulkWrite(
           items.map((item) => ({
@@ -144,10 +147,10 @@ async function writeMongoSnapshot(db: Db, data: Database): Promise<void> {
     })
   );
   await db
-    .collection(SETTINGS_COLLECTION)
+    .collection<MongoRecord>(SETTINGS_COLLECTION)
     .replaceOne(
       { _id: SETTINGS_ID },
-      { ...(data.settings as unknown as Document), _id: SETTINGS_ID },
+      { ...(data.settings as unknown as MongoRecord), _id: SETTINGS_ID },
       { upsert: true }
     );
 }

@@ -5,6 +5,8 @@ declare global {
     interface Request {
       user?: User;
       guestId?: string;
+      /** Raw JSON body, retained for payment webhook signature verification. */
+      rawBody?: Buffer;
     }
   }
 }

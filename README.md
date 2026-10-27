@@ -66,9 +66,9 @@ The sign-in screen has one-click buttons that fill either account.
 | --------- | ----------------------------------------------------------------- |
 | Web       | Next.js 15.5 App Router, React 19, Tailwind CSS 4, Zustand, Lucide |
 | API       | Express 4, TypeScript, Zod validation, JWT cookie auth            |
-| Data      | JSON file database (`api/src/data/db.json`) with write batching    |
-| Cache     | In-process TTL cache for catalogue/storefront reads               |
-| Payments  | Built-in mock provider (Razorpay-shaped)                          |
+| Data      | JSON file by default; optional MongoDB snapshot driver            |
+| Cache     | In-process TTL cache by default; optional Redis                   |
+| Payments  | Mock by default; Razorpay Orders + HMAC verification             |
 | Money     | Integer paise everywhere in the API; `formatINR` in the UI        |
 
 ### Repository layout
@@ -124,14 +124,27 @@ Base URL: `http://localhost:4000/api/v1` (the web app proxies `/api/v1/*` so coo
 | Orders     | `GET /orders`, `GET /orders/:id`, `POST /orders/:id/cancel`, `PATCH /orders/:id/status`, `POST /orders/:id/refund`, `GET /orders/:id/invoice` |
 | Reviews    | `GET/POST /products/:productId/reviews`, `POST /reviews/:id/helpful`, `PATCH /reviews/:id`   |
 | Admin      | `GET /admin/stats`, `/admin/products`, `/admin/inventory`, `/admin/users`, `/admin/reviews`, `/admin/settings`, `/admin/audit-logs` |
-| Media      | `POST /media/sign` (Cloudinary-style signature placeholder)                                  |
-| Health     | `GET /health`                                                                                |
+| Media      | `POST /media/sign` (Cloudinary signed uploads)                                                |
+| Health     | `GET /health` (includes active adapters)                                                      |
 
 Auth uses an httpOnly `ss_token` cookie. Guest carts use `ss_guest`. Checkout and payment mutations accept an `Idempotency-Key` header, and the API applies per-route rate limits.
 
 ### Environment
 
-Copy `.env.example` to `.env` at the repo root (or `api/.env`) to change the port, JWT secret, data file or CORS origin. The API loads the first `.env` it finds. The web app reads `API_URL` from `web/.env.local`; it defaults to `http://localhost:4000`.
+Copy `.env.example` to `.env` at the repo root (or `api/.env`) to change the port, JWT secret, database, cache, payment or media settings. The API loads the first `.env` it finds and fails fast if a selected adapter is misconfigured. The web app reads `API_URL` from `web/.env.local`; it defaults to `http://localhost:4000`.
+
+### Enabling a production adapter
+
+The demo stays zero-config: with no extra variables it uses the JSON file, in-process cache, mock payments and demo Cloudinary signatures.
+
+| Adapter    | Set                                                                 | Notes |
+| ---------- | ------------------------------------------------------------------- | ----- |
+| MongoDB    | `MONGODB_URI` (+ optional `MONGODB_DB`)                              | Creates collections and indexes on first boot, seeds when empty, and flushes debounced snapshots. Stop the API before switching an existing demo dataset. |
+| Redis      | `REDIS_URL`                                                          | Shared catalogue cache and distributed rate-limit counters. If Redis is unreachable the API refuses to start rather than silently degrading. |
+| Razorpay   | `PAYMENT_PROVIDER=razorpay`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Checkout creates a Razorpay Order; the browser opens Razorpay Checkout; the API verifies the `order_id|payment_id` HMAC and fetches the payment to confirm amount and capture status. Point the Razorpay webhook at `POST /api/v1/webhooks/razorpay`. |
+| Cloudinary | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (+ optional folder/preset) | `POST /api/v1/media/sign` returns a timestamped SHA-1 signature for direct browser uploads. Store the returned `secure_url` and `public_id` on the product image. |
+
+**MongoDB driver caveat:** the existing routes use a synchronous in-process data model, so the Mongo adapter loads collections into memory and writes debounced snapshots (all indexes are still created). It is durable and fine for one API process, but multi-writer horizontal scaling should replace the `getDb()` access pattern with per-collection repositories or atomic document updates. Redis and MongoDB cannot be integration-tested in this environment (neither service is installed); run the smoke checklist in the README after pointing them at real instances.
 
 ---
 
@@ -148,18 +161,18 @@ Copy `.env.example` to `.env` at the repo root (or `api/.env`) to change the por
 
 ## Production adapters
 
-The demo deliberately keeps third-party services out of the critical path. Each boundary is isolated so it can be swapped without touching UI code:
+The default demo deliberately keeps third-party services out of the critical path. Each boundary is isolated so it can be swapped without touching UI code:
 
-| Concern      | Demo                                   | Production swap                                                                 |
-| ------------ | -------------------------------------- | ------------------------------------------------------------------------------- |
-| Database     | JSON file + in-memory cache            | Replace `api/src/lib/db.ts` with MongoDB collections (the TypeScript models in `api/src/types.ts` map directly). |
-| Cache        | `api/src/lib/cache.ts` TTL map         | Redis client with the same `get/set/invalidate` surface.                        |
-| Payments     | `api/src/modules/checkout` mock verify | Razorpay Orders + signature verification; the `POST /webhooks/razorpay` handler already has the shape. |
-| Images       | Locally generated SVG art              | Cloudinary upload/signature via `POST /media/sign`; store `{ url, alt, publicId }`. |
+| Concern      | Demo                                   | Implemented adapter |
+| ------------ | -------------------------------------- | ------------------- |
+| Database     | JSON file + write batching             | MongoDB collections (loads on boot, debounced snapshots, indexes). |
+| Cache        | `api/src/lib/cache.ts` TTL map         | Redis (`get/set/del/prefix/increment` with shared TTLs). |
+| Payments     | Mock provider (Razorpay-shaped)        | Razorpay Orders, client HMAC + payment lookup, raw-body webhook HMAC, amount checks. |
+| Images       | Locally generated SVG art              | Cloudinary signed uploads via `POST /media/sign`; store `{ url, alt, publicId }`. |
 | Auth         | bcrypt + JWT cookie                    | Same cookie flow behind Clerk/Auth0, or keep JWT with a managed secret.          |
 | Email/SMS    | Toast confirmations only               | Transactional email on paid/shipped events (Resend, SES, MSG91).                |
 
-When wiring a real payment provider, keep these invariants: verify signatures server-side, never trust client amounts, confirm stock reservation inside the same transaction as payment capture, and make webhook handling idempotent.
+When wiring a real payment provider, keep these invariants: verify signatures server-side, never trust client amounts, confirm stock reservation inside the same transaction as payment capture, and make webhook handling idempotent. The Razorpay adapter does all four: it releases the local hold if order creation fails, verifies both client and webhook signatures, fetches the payment to compare `amount`/`order_id`, and deduplicates webhook events in Redis/memory.
 
 ---
 
