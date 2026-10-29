@@ -881,6 +881,12 @@ export async function buildSeed(): Promise<Database> {
   const orders = buildOrders(users, products);
   const reviews = buildReviews(users, products, orders);
 
+  const settings = buildSettings();
+  settings.orderCounter = Math.max(
+    settings.orderCounter,
+    ...orders.map((order) => Number(order.orderNumber.replace(/^EC-/, "")) || 0)
+  );
+
   const stockMovements = products.slice(0, 8).flatMap((p, i) => {
     const v = p.variants[0];
     return [
@@ -917,7 +923,7 @@ export async function buildSeed(): Promise<Database> {
     reviews,
     stockMovements,
     auditLogs: [],
-    settings: buildSettings(),
+    settings,
   };
 }
 

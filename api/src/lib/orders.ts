@@ -13,9 +13,14 @@ export function deliveryFee(subtotal: number, method: "standard" | "express"): n
 }
 
 export function nextOrderNumber(): string {
-  const s = getDb().settings;
-  s.orderCounter += 1;
-  return `EC-${s.orderCounter}`;
+  const db = getDb();
+  const used = new Set(db.orders.map((order) => order.orderNumber));
+  let next = db.settings.orderCounter;
+  do {
+    next += 1;
+  } while (used.has(`EC-${next}`));
+  db.settings.orderCounter = next;
+  return `EC-${next}`;
 }
 
 export function appendTimeline(order: Order, status: string, note: string, by: string): void {
