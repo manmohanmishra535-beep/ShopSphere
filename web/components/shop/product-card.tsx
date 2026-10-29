@@ -128,7 +128,7 @@ export function ProductCard({
           <RatingStars value={product.ratingAvg} count={product.ratingCount} />
         </div>
         <div className="mt-auto flex items-end justify-between gap-3 pt-2.5">
-          <Price price={product.price} compareAtPrice={product.compareAtPrice} showDiscount />
+          <Price price={product.price} compareAtPrice={product.compareAtPrice} />
           {visibleColours.length > 0 ? (
             <span className="flex shrink-0 items-center gap-1" aria-label={`${colours.length} colours`}>
               {visibleColours.map((colour) => (

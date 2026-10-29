@@ -151,29 +151,27 @@ export default async function HomePage() {
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link href="/products?sort=newest" className={buttonStyles("primary", "lg", "group h-12 rounded-xl px-6 shadow-[0_12px_24px_-14px_var(--primary)]")}>
+                <Link href="/products?sort=newest" className={buttonStyles("primary", "lg", "group h-12 w-full justify-center rounded-xl px-6 shadow-[0_12px_24px_-14px_var(--primary)] sm:w-auto")}>
                   Shop new arrivals
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
-                <Link href="/products?category=sale" className={buttonStyles("outline", "lg", "h-12 rounded-xl bg-bg/60 px-6 backdrop-blur")}>
+                <Link href="/products?category=sale" className={buttonStyles("outline", "lg", "h-12 w-full justify-center rounded-xl bg-bg/60 px-6 backdrop-blur sm:w-auto")}>
                   Explore the sale
                 </Link>
               </div>
 
-              <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-border pt-5">
+              <div className="mt-9 grid grid-cols-3 divide-x divide-border border-t border-border pt-5">
                 <div>
                   <p className="price-num text-lg font-semibold tracking-[-0.03em]">{formatNumber(stats.products)}</p>
-                  <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Considered pieces</p>
+                  <p className="mt-0.5 max-w-[90px] text-[9px] font-medium uppercase leading-3 tracking-[0.12em] text-muted sm:text-[10px] sm:leading-4 sm:tracking-[0.14em]">Considered pieces</p>
                 </div>
-                <span className="hidden h-8 w-px bg-border sm:block" />
-                <div>
+                <div className="pl-4">
                   <p className="price-num text-lg font-semibold tracking-[-0.03em]">{formatNumber(stats.happyCustomers)}+</p>
-                  <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Happy homes</p>
+                  <p className="mt-0.5 text-[9px] font-medium uppercase leading-3 tracking-[0.12em] text-muted sm:text-[10px] sm:leading-4 sm:tracking-[0.14em]">Happy homes</p>
                 </div>
-                <span className="hidden h-8 w-px bg-border sm:block" />
-                <div>
+                <div className="pl-4">
                   <MiniRating />
-                  <p className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Loved by 1,200+</p>
+                  <p className="mt-1.5 text-[9px] font-medium uppercase leading-3 tracking-[0.12em] text-muted sm:text-[10px] sm:leading-4 sm:tracking-[0.14em]">Loved by 1,200+</p>
                 </div>
               </div>
             </div>
@@ -216,7 +214,7 @@ export default async function HomePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-rows-[1fr_0.78fr] gap-2.5 sm:gap-3.5">
+                <div className="grid grid-rows-1 gap-2.5 sm:grid-rows-[1fr_0.78fr] sm:gap-3.5">
                   {secondary ? (
                     <Link
                       href={`/products/${secondary.slug}`}
@@ -231,13 +229,13 @@ export default async function HomePage() {
                         Best seller
                       </span>
                       <div className="absolute inset-x-2.5 bottom-2.5 rounded-xl border border-white/70 bg-white/92 px-2.5 py-2 shadow-sm backdrop-blur">
-                        <p className="truncate text-[11px] font-semibold text-slate-900">{secondary.title}</p>
+                        <p className="line-clamp-2 text-[10px] font-semibold leading-3.5 text-slate-900 sm:text-[11px] sm:leading-4">{secondary.title}</p>
                         <p className="mt-0.5 text-[10px] text-slate-600">{formatINR(secondary.price)}</p>
                       </div>
                     </Link>
                   ) : null}
 
-                  <Link href="/products?sort=newest" className="group relative flex flex-col justify-between overflow-hidden rounded-[20px] bg-primary p-4 text-white shadow-[0_20px_36px_-24px_var(--primary)] sm:rounded-[24px] sm:p-5">
+                  <Link href="/products?sort=newest" className="group relative hidden flex-col justify-between overflow-hidden rounded-[20px] bg-primary p-4 text-white shadow-[0_20px_36px_-24px_var(--primary)] sm:flex sm:rounded-[24px] sm:p-5">
                     <div aria-hidden className="absolute -right-8 -top-8 h-28 w-28 rounded-full border border-white/20" />
                     <div aria-hidden className="absolute -right-2 top-7 h-16 w-16 rounded-full bg-white/10" />
                     <Sparkles className="h-4 w-4 text-white/80" strokeWidth={1.6} />

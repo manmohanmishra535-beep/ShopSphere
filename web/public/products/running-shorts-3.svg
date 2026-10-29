@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
-      <stop offset="0" stop-color="#f3ece7"/>
-      <stop offset="1" stop-color="#dfcfc8"/>
+      <stop offset="0" stop-color="#efe9e6"/>
+      <stop offset="1" stop-color="#d8cac5"/>
     </linearGradient>
     <radialGradient id="glow" cx="32%" cy="18%" r="78%">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.72"/>
@@ -29,7 +29,7 @@
       <feComponentTransfer><feFuncA type="linear" slope="0.11"/></feComponentTransfer>
     </filter>
     <filter id="objectShadow" x="-30%" y="-30%" width="160%" height="170%">
-      <feDropShadow dx="0" dy="18" stdDeviation="14" flood-color="#312723" flood-opacity="0.2"/>
+      <feDropShadow dx="0" dy="22" stdDeviation="16" flood-color="#2e2725" flood-opacity="0.28"/>
     </filter>
     <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
     <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
@@ -37,13 +37,13 @@
   </defs>
   <rect width="800" height="1000" fill="url(#bg)"/>
   <rect width="800" height="1000" fill="url(#glow)"/>
-  <circle cx="685.0988715328276" cy="110" r="144" fill="#bbc4cb" opacity="0.55"/>
-  <path d="M 136 845 L 136 340 C 136 160 664 160 664 340 L 664 845 Z" fill="#bbc4cb" opacity="0.58"/>
-  <path d="M 137 845 L 137 340 C 137 160 663 160 663 340 L 663 845" fill="none" stroke="#c9b3aa" stroke-width="1.5" opacity="0.8"/>
-  <line x1="80" y1="845" x2="720" y2="845" stroke="#c9b3aa" stroke-width="1.5" opacity="0.9"/>
-  <ellipse cx="400" cy="853" rx="200" ry="22" fill="#312723" opacity="0.14" filter="url(#blur)"/>
-  <g transform="translate(400 500) scale(1 1) translate(-400 -500)" filter="url(#objectShadow)" stroke="#73423b" stroke-opacity="0.16" stroke-width="1.4" stroke-linejoin="round">
-    <g transform="translate(400 500) rotate(-2.2) scale(1.035) translate(-400 -500)"><g>
+  <circle cx="685.0988715328276" cy="110" r="144" fill="#b0bac2" opacity="0.55"/>
+  <path d="M 136 845 L 136 340 C 136 160 664 160 664 340 L 664 845 Z" fill="#b0bac2" opacity="0.58"/>
+  <path d="M 137 845 L 137 340 C 137 160 663 160 663 340 L 663 845" fill="none" stroke="#bfaea7" stroke-width="1.5" opacity="0.8"/>
+  <line x1="80" y1="845" x2="720" y2="845" stroke="#bfaea7" stroke-width="1.5" opacity="0.9"/>
+  <ellipse cx="400" cy="853" rx="200" ry="22" fill="#2e2725" opacity="0.14" filter="url(#blur)"/>
+  <g transform="translate(400 500) scale(1 1) translate(-400 -500)" filter="url(#objectShadow)" stroke="#73423b" stroke-opacity="0.34" stroke-width="2.2" stroke-linejoin="round">
+    <g transform="translate(400 500) rotate(-2.2) scale(1.3455) translate(-400 -500)"><g>
     <path d="M302 310 L498 310 L510 374 L500 584 L420 588 L401 480 L380 588 L300 584 L290 374 Z" fill="url(#body)"/>
     <path d="M302 310 L498 310 L496 350 L304 350Z" fill="#73423b" opacity="0.32"/>
     <path d="M400 350 L400 466" stroke="#bf938c" stroke-width="1.5" opacity="0.32"/>

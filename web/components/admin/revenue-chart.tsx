@@ -3,7 +3,7 @@ import type { AdminStats } from "@/lib/types";
 
 export function RevenueChart({ data }: { data: AdminStats["revenueByDay"] }) {
   const width = 800;
-  const height = 240;
+  const height = 360;
   const pad = { top: 16, right: 8, bottom: 28, left: 8 };
   const innerW = width - pad.left - pad.right;
   const innerH = height - pad.top - pad.bottom;
@@ -34,7 +34,7 @@ export function RevenueChart({ data }: { data: AdminStats["revenueByDay"] }) {
         viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={`Revenue over the last ${data.length} days, peaking at ${formatINR(max)}`}
-        className="h-[220px] w-full"
+        className="h-[330px] w-full"
         preserveAspectRatio="none"
       >
         <defs>

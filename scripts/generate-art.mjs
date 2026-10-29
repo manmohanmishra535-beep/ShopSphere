@@ -136,9 +136,9 @@ const products = {
 };
 
 const scenes = [
-  { top: "#f3eee4", bottom: "#ded4c4", ink: "#2f2a24", line: "#c8bba7" },
-  { top: "#edf1ec", bottom: "#d5ded5", ink: "#29312b", line: "#bcc8bd" },
-  { top: "#f3ece7", bottom: "#dfcfc8", ink: "#312723", line: "#c9b3aa" },
+  { top: "#eeece6", bottom: "#d5d2ca", ink: "#2b2b28", line: "#b9b6ad" },
+  { top: "#e9eeeb", bottom: "#ccd6d0", ink: "#26302b", line: "#b0bcb5" },
+  { top: "#efe9e6", bottom: "#d8cac5", ink: "#2e2725", line: "#bfaea7" },
 ];
 
 const categories = {
@@ -202,7 +202,7 @@ function paint(color, extra = {}) {
 
 function svgScene({ width = 800, height = 1000, scene, tint, body, seed = 1, content, extraDefs = "" }) {
   const rand = rng(seed);
-  const softTint = mix(tint, "#ffffff", 0.52);
+  const softTint = mix(tint, "#ffffff", 0.44);
   const archWidth = width * 0.66;
   const archLeft = (width - archWidth) / 2;
   const floor = height * 0.845;
@@ -301,6 +301,12 @@ function shirt(p, env) {
   <g>
     <path d="${bodyPath}" fill="url(#body)" stroke="${p.shade}" stroke-width="2.4" stroke-opacity="0.44" stroke-linejoin="round"/>
     <g clip-path="url(#shirtClip)"><rect x="260" y="230" width="290" height="540" fill="url(#linen)"/></g>
+    <path d="M332 352 L298 378 L260 592 L294 612 L338 398Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.42" stroke-linejoin="round"/>
+    <path d="M468 352 L502 378 L540 592 L506 612 L462 398Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.42" stroke-linejoin="round"/>
+    <path d="M260 592 L294 612 L300 586 L266 566Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.4" stroke-opacity="0.38"/>
+    <path d="M540 592 L506 612 L500 586 L534 566Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.4" stroke-opacity="0.38"/>
+    <path d="M276 582 L281 596 M290 588 L295 602 M524 582 L519 596 M510 588 L505 602" stroke="${p.shade}" stroke-width="1.2" opacity="0.32"/>
+    <path d="M338 398 L312 580 M462 398 L488 580" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.28"/>
     <path d="M372 260 C384 288 416 288 428 260 C414 276 386 276 372 260Z" fill="${env.bottom}" stroke="${p.deep}" stroke-width="1.4" stroke-opacity="0.35"/>
     <path d="M360 254 L387 278 L400 294 L372 311 L350 276Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.4"/>
     <path d="M440 254 L413 278 L400 294 L428 311 L450 276Z" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.4"/>
@@ -317,7 +323,7 @@ function shirt(p, env) {
   </g>`;
 }
 
-function jacket(p) {
+function jacket(p, env) {
   const bodyPath =
     "M306 276 L356 248 L400 300 L444 248 L494 276 L542 338 L512 386 L478 356 L494 734 L400 754 L306 734 L322 356 L288 386 L258 338 Z";
   return `<defs>
@@ -328,24 +334,33 @@ function jacket(p) {
     <clipPath id="jacketClip"><path d="${bodyPath}"/></clipPath>
   </defs>
   <g>
-    <path d="${bodyPath}" fill="url(#body)"/>
+    <path d="${bodyPath}" fill="url(#body)" stroke="${p.shade}" stroke-width="2.5" stroke-opacity="0.46" stroke-linejoin="round"/>
     <g clip-path="url(#jacketClip)"><rect x="250" y="230" width="310" height="540" fill="url(#denim)"/></g>
-    <path d="M356 248 L400 300 L378 320 L338 274Z" fill="${p.light}"/>
-    <path d="M444 248 L400 300 L422 320 L462 274Z" fill="${p.pale}"/>
-    <path d="M400 300 L400 754" stroke="${p.deep}" stroke-width="2.4" opacity="0.5"/>
+    <path d="M322 356 L288 386 L246 596 L282 618 L330 400Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.3" stroke-opacity="0.44" stroke-linejoin="round"/>
+    <path d="M478 356 L512 386 L554 596 L518 618 L470 400Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.3" stroke-opacity="0.44" stroke-linejoin="round"/>
+    <path d="M246 596 L282 618 L288 592 L252 572Z" fill="${p.shade}" opacity="0.35" stroke="${p.deep}" stroke-width="1.2" stroke-opacity="0.4"/>
+    <path d="M554 596 L518 618 L512 592 L548 572Z" fill="${p.shade}" opacity="0.35" stroke="${p.deep}" stroke-width="1.2" stroke-opacity="0.4"/>
+    <circle cx="270" cy="588" r="4" fill="url(#metal)" stroke="${p.deep}" stroke-width="1"/>
+    <circle cx="530" cy="588" r="4" fill="url(#metal)" stroke="${p.deep}" stroke-width="1"/>
+    <path d="M330 400 L306 574 M470 400 L494 574" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.26"/>
+    <path d="M356 248 L400 300 L378 320 L338 274Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.42"/>
+    <path d="M444 248 L400 300 L422 320 L462 274Z" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.42"/>
+    <path d="M392 304 L408 304 L410 724 L390 724Z" fill="${p.deep}" opacity="0.58"/>
+    <path d="M400 310 L400 716" stroke="${p.pale}" stroke-width="1.7" stroke-dasharray="3 4" opacity="0.62"/>
+    <circle cx="400" cy="344" r="5.5" fill="url(#metal)" stroke="${p.deep}" stroke-width="1.2"/>
     <path d="M382 300 L382 738 M418 300 L418 738" stroke="${p.light}" stroke-width="1.3" opacity="0.32"/>
     <path d="M382 376 C392 389 392 406 386 419 M418 376 C408 389 408 406 414 419" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.4"/>
     <path d="M326 418 L372 426 L366 473 L320 463Z" fill="none" stroke="${p.deep}" stroke-width="2" opacity="0.45"/>
     <path d="M428 426 L474 418 L480 463 L434 473Z" fill="none" stroke="${p.deep}" stroke-width="2" opacity="0.45"/>
     <path d="M322 356 L306 734 M478 356 L494 734" stroke="${p.deep}" stroke-width="2" opacity="0.16"/>
-    ${[470, 530, 590, 650].map((y) => `<circle cx="400" cy="${y}" r="5" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.4"/>`).join("")}
+    ${[470, 530, 590, 650].map((y) => `<circle cx="388" cy="${y}" r="4.2" fill="url(#metal)" stroke="${p.deep}" stroke-width="1.1"/>`).join("")}
     <path d="M376 690 L424 690" stroke="${p.deep}" stroke-width="9" opacity="0.35"/>
     <path d="M350 510 C360 520 365 536 365 553 M450 600 C442 618 439 638 442 654" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.24"/>
     <path d="M320 720 C352 736 448 736 480 720" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.22"/>
   </g>`;
 }
 
-function cardigan(p) {
+function cardigan(p, env) {
   const bodyPath =
     "M320 292 L360 258 L400 354 L440 258 L480 292 L524 348 L502 384 L468 358 L478 700 L400 714 L322 700 L332 358 L298 384 L276 348 Z";
   return `<defs>
@@ -356,45 +371,64 @@ function cardigan(p) {
     <clipPath id="cardiganClip"><path d="${bodyPath}"/></clipPath>
   </defs>
   <g>
-    <path d="${bodyPath}" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.34" stroke-linejoin="round"/>
-    <g clip-path="url(#cardiganClip)"><rect x="260" y="240" width="280" height="490" fill="url(#knit)"/></g>
-    <path d="M360 258 L400 354 L372 374 L338 290Z" fill="${p.light}"/>
-    <path d="M440 258 L400 354 L428 374 L462 290Z" fill="${p.pale}"/>
-    <path d="M386 342 L400 374 L414 342 L416 702 L384 702Z" fill="${p.deep}" opacity="0.58"/>
-    <path d="M368 316 L378 704 M432 316 L422 704" stroke="${p.light}" stroke-width="10" opacity="0.78"/>
-    <path d="M368 316 L378 704 M432 316 L422 704" stroke="${p.shade}" stroke-width="1.2" opacity="0.2"/>
-    <path d="M334 674 L334 696 M346 674 L346 696 M358 674 L358 696 M442 674 L442 696 M454 674 L454 696 M466 674 L466 696" stroke="${p.shade}" stroke-width="1.5" opacity="0.3"/>
-    ${[382, 438, 494, 550, 606, 662].map((y) => `<circle cx="389" cy="${y}" r="4.6" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.4"/>`).join("")}
-    <path d="M340 520 C344 548 344 580 340 606 M460 520 C456 548 456 580 460 606" fill="none" stroke="${p.shade}" stroke-width="2" opacity="0.22"/>
-    <path d="M332 358 L322 700 M468 358 L478 700" stroke="${p.deep}" stroke-width="2.5" opacity="0.2"/>
-    <path d="M332 358 L298 384 M468 358 L502 384" stroke="${p.light}" stroke-width="2" opacity="0.38"/>
+    <path d="${bodyPath}" fill="url(#body)" stroke="${p.shade}" stroke-width="2.5" stroke-opacity="0.46" stroke-linejoin="round"/>
+    <g clip-path="url(#cardiganClip)"><rect x="260" y="240" width="280" height="500" fill="url(#knit)"/></g>
+    <path d="M332 358 L298 384 L258 566 L292 586 L338 402Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.42" stroke-linejoin="round"/>
+    <path d="M468 358 L502 384 L542 566 L508 586 L462 402Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.42" stroke-linejoin="round"/>
+    <path d="M258 566 L292 586 L298 560 L264 540Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.5" stroke-opacity="0.38"/>
+    <path d="M542 566 L508 586 L502 560 L536 540Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.5" stroke-opacity="0.38"/>
+    <path d="M272 554 L278 568 M286 560 L292 574 M530 554 L524 568 M516 560 L510 574" stroke="${p.shade}" stroke-width="1.2" opacity="0.35"/>
+    <path d="M338 402 L312 554 M462 402 L488 554" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.28"/>
+    <path d="M364 262 C376 292 424 292 436 262 C420 278 380 278 364 262Z" fill="${env.bottom}" stroke="${p.deep}" stroke-width="1.5" stroke-opacity="0.4"/>
+    <path d="M360 258 L400 354 L372 374 L338 290Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.42"/>
+    <path d="M440 258 L400 354 L428 374 L462 290Z" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.42"/>
+    <path d="M366 278 L400 354 L434 278" fill="none" stroke="${p.pale}" stroke-width="10" opacity="0.62"/>
+    <path d="M366 278 L400 354 L434 278" fill="none" stroke="${p.shade}" stroke-width="1.4" opacity="0.24"/>
+    <path d="M392 354 L408 354 L408 704 L392 704Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.2" stroke-opacity="0.4"/>
+    <path d="M400 360 L400 704" stroke="${p.shade}" stroke-width="1.6" opacity="0.36"/>
+    ${[386, 436, 486, 536, 586, 636].map((y) => `<circle cx="400" cy="${y}" r="4.4" fill="${p.pale}" stroke="${p.shade}" stroke-width="1.4"/>`).join("")}
+    <path d="M334 512 L374 512 L374 578 L334 578Z" fill="none" stroke="${p.shade}" stroke-width="2" opacity="0.34"/>
+    <path d="M426 512 L466 512 L466 578 L426 578Z" fill="none" stroke="${p.shade}" stroke-width="2" opacity="0.34"/>
+    <path d="M334 578 C346 584 362 584 374 578 M426 578 C438 584 454 584 466 578" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.32"/>
+    <path d="M322 674 L322 696 M334 674 L334 696 M346 674 L346 696 M358 674 L358 696 M442 674 L442 696 M454 674 L454 696 M466 674 L466 696 M478 674 L478 696" stroke="${p.shade}" stroke-width="1.4" opacity="0.3"/>
+    <path d="M332 358 L322 700 M468 358 L478 700" stroke="${p.deep}" stroke-width="2.4" opacity="0.2"/>
+    <path d="M332 358 L298 384 M468 358 L502 384" stroke="${p.light}" stroke-width="2" opacity="0.4"/>
+    <path d="M298 384 L306 396 L340 372 L332 358Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.4" stroke-opacity="0.34"/>
+    <path d="M502 384 L494 396 L460 372 L468 358Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.4" stroke-opacity="0.34"/>
     <path d="M344 440 C356 452 362 469 362 489 M454 520 C444 542 441 565 446 585" fill="none" stroke="${p.light}" stroke-width="2.2" opacity="0.3"/>
     <path d="M334 674 C354 686 446 686 466 674" fill="none" stroke="${p.light}" stroke-width="2.5" opacity="0.3"/>
-    <path d="M328 382 C342 376 350 370 360 360 M472 382 C458 376 450 370 440 360" fill="none" stroke="${p.light}" stroke-width="1.8" opacity="0.28"/>
   </g>`;
 }
 
-function tee(p) {
+function tee(p, env) {
   return `<g>
-    <path d="M314 294 L364 270 C377 284 387 292 400 292 C413 292 423 284 436 270 L486 294 L522 354 L490 392 L462 366 L472 704 L328 704 L338 366 L310 392 L278 354 Z" fill="url(#body)"/>
-    <path d="M364 270 C375 288 386 298 400 298 C414 298 425 288 436 270 L422 264 C416 277 408 283 400 283 C392 283 384 277 378 264Z" fill="${p.shade}" opacity="0.8"/>
+    <path d="M314 294 L364 270 C377 284 387 292 400 292 C413 292 423 284 436 270 L486 294 L522 354 L490 392 L462 366 L472 704 L328 704 L338 366 L310 392 L278 354 Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.4" stroke-opacity="0.46" stroke-linejoin="round"/>
+    <path d="M364 270 C375 288 386 298 400 298 C414 298 425 288 436 270 C422 282 378 282 364 270Z" fill="${env.bottom}" stroke="${p.deep}" stroke-width="1.4" stroke-opacity="0.38"/>
+    <path d="M364 270 C375 288 386 298 400 298 C414 298 425 288 436 270" fill="none" stroke="${p.pale}" stroke-width="7" opacity="0.55"/>
     <path d="M400 318 L400 694" stroke="${p.light}" stroke-width="1.4" opacity="0.18"/>
-    <path d="M338 366 L329 692 M462 366 L471 692" stroke="${p.deep}" stroke-width="2" opacity="0.12"/>
-    <g fill="none" stroke="${p.shade}" stroke-width="3" opacity="0.45">
+    <path d="M338 366 L329 692 M462 366 L471 692" stroke="${p.deep}" stroke-width="2" opacity="0.18"/>
+    <path d="M329 678 C360 690 440 690 471 678" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.28"/>
+    <g fill="none" stroke="${p.shade}" stroke-width="3.5" opacity="0.6">
       <circle cx="400" cy="480" r="42"/>
       <path d="M400 438 L400 522 M358 480 L442 480"/>
-      <path d="M372 452 L428 508 M428 452 L372 508" opacity="0.35"/>
+      <path d="M372 452 L428 508 M428 452 L372 508" opacity="0.42"/>
     </g>
     <path d="M352 676 C376 684 424 684 448 676" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.28"/>
     <path d="M470 330 C480 344 485 360 485 379" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.2"/>
   </g>`;
 }
 
-function hoodie(p, scale = 1) {
+function hoodie(p, env, scale = 1) {
   return `<g transform="translate(400 500) scale(${scale}) translate(-400 -500)">
-    <path d="M356 294 C358 236 442 236 444 294 C446 345 428 376 400 376 C372 376 354 345 356 294Z" fill="${p.shade}"/>
-    <path d="M366 300 C370 260 430 260 434 300 C435 332 423 350 400 350 C377 350 365 332 366 300Z" fill="${p.deep}" opacity="0.45"/>
-    <path d="M310 324 L362 294 C376 326 424 326 438 294 L490 324 L528 390 L496 426 L468 400 L480 712 L320 712 L332 400 L304 426 L272 390Z" fill="url(#body)"/>
+    <path d="M356 294 C358 236 442 236 444 294 C446 345 428 376 400 376 C372 376 354 345 356 294Z" fill="${p.shade}" stroke="${p.deep}" stroke-width="2" stroke-opacity="0.4"/>
+    <path d="M366 300 C370 260 430 260 434 300 C435 332 423 350 400 350 C377 350 365 332 366 300Z" fill="${p.deep}" opacity="0.55"/>
+    <path d="M310 324 L362 294 C376 326 424 326 438 294 L490 324 L528 390 L496 426 L468 400 L480 712 L320 712 L332 400 L304 426 L272 390Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.4" stroke-opacity="0.46" stroke-linejoin="round"/>
+    <path d="M332 400 L304 426 L264 628 L300 648 L340 442Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.42" stroke-linejoin="round"/>
+    <path d="M468 400 L496 426 L536 628 L500 648 L460 442Z" fill="url(#body)" stroke="${p.shade}" stroke-width="2.2" stroke-opacity="0.42" stroke-linejoin="round"/>
+    <path d="M264 628 L300 648 L306 622 L270 602Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.4" stroke-opacity="0.38"/>
+    <path d="M536 628 L500 648 L494 622 L530 602Z" fill="${p.light}" stroke="${p.shade}" stroke-width="1.4" stroke-opacity="0.38"/>
+    <path d="M278 614 L282 628 M292 620 L296 634 M522 614 L518 628 M508 620 L504 634" stroke="${p.shade}" stroke-width="1.2" opacity="0.32"/>
+    <path d="M340 442 L318 608 M460 442 L482 608" fill="none" stroke="${p.light}" stroke-width="2" opacity="0.26"/>
     <path d="M362 294 C369 322 382 338 400 338 C418 338 431 322 438 294" fill="none" stroke="${p.light}" stroke-width="4" opacity="0.55"/>
     <path d="M386 340 L387 446 M414 340 L413 446" stroke="${p.pale}" stroke-width="5" stroke-linecap="round"/>
     <circle cx="386" cy="450" r="5" fill="${p.pale}"/><circle cx="414" cy="450" r="5" fill="${p.pale}"/>
@@ -737,8 +771,9 @@ function productArt(slug, variant = 0, options = {}) {
   const width = options.width ?? 800;
   const height = options.height ?? 1000;
   const rot = [-1.2, 1.8, -2.2][variant % 3];
-  const scale = [1, 0.965, 1.035][variant % 3];
-  const content = `<g transform="translate(400 500) rotate(${rot}) scale(${scale}) translate(-400 -500)">${renderers[spec.type](p)}</g>`;
+  const baseScale = spec.type === "trousers" || spec.type === "leggings" ? 1.15 : spec.type === "hat" ? 1.2 : 1.3;
+  const scale = baseScale * [1, 0.965, 1.035][variant % 3];
+  const content = `<g transform="translate(400 500) rotate(${rot}) scale(${scale}) translate(-400 -500)">${renderers[spec.type](p, scene)}</g>`;
   return svgScene({
     width,
     height,
