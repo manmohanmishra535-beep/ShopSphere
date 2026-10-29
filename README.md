@@ -135,14 +135,14 @@ Copy `.env.example` to `.env` at the repo root (or `api/.env`) to change the por
 
 ### Enabling a production adapter
 
-The demo stays zero-config: with no extra variables it uses the JSON file, in-process cache, mock payments and demo Cloudinary signatures.
+The demo stays zero-config: with no extra variables it uses the JSON file, in-process cache, mock payments and demo Cloudinary uploads (compressed into the product record).
 
 | Adapter    | Set                                                                 | Notes |
 | ---------- | ------------------------------------------------------------------- | ----- |
 | MongoDB    | `MONGODB_URI` (+ optional `MONGODB_DB`)                              | Creates collections and indexes on first boot, seeds when empty, and flushes debounced snapshots. Stop the API before switching an existing demo dataset. |
 | Redis      | `REDIS_URL`                                                          | Shared catalogue cache and distributed rate-limit counters. If Redis is unreachable the API refuses to start rather than silently degrading. |
 | Razorpay   | `PAYMENT_PROVIDER=razorpay`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Checkout creates a Razorpay Order; the browser opens Razorpay Checkout; the API verifies the `order_id|payment_id` HMAC and fetches the payment to confirm amount and capture status. Point the Razorpay webhook at `POST /api/v1/webhooks/razorpay`. |
-| Cloudinary | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (+ optional folder/preset) | `POST /api/v1/media/sign` returns a timestamped SHA-1 signature for direct browser uploads. Store the returned `secure_url` and `public_id` on the product image. |
+| Cloudinary | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (+ optional folder/preset) | `POST /api/v1/media/sign` returns a timestamped SHA-1 signature for direct browser uploads. The admin product form uploads the file to Cloudinary and stores the returned `secure_url` and `public_id` with the product image. Without credentials the same button compresses the image client-side and embeds it with the product. |
 
 **MongoDB driver caveat:** the existing routes use a synchronous in-process data model, so the Mongo adapter loads collections into memory and writes debounced snapshots (all indexes are still created). It is durable and fine for one API process, but multi-writer horizontal scaling should replace the `getDb()` access pattern with per-collection repositories or atomic document updates. Redis and MongoDB cannot be integration-tested in this environment (neither service is installed); run the app once against real instances after configuring them.
 
@@ -168,7 +168,7 @@ The default demo deliberately keeps third-party services out of the critical pat
 | Database     | JSON file + write batching             | MongoDB collections (loads on boot, debounced snapshots, indexes). |
 | Cache        | `api/src/lib/cache.ts` TTL map         | Redis (`get/set/del/prefix/increment` with shared TTLs). |
 | Payments     | Mock provider (Razorpay-shaped)        | Razorpay Orders, client HMAC + payment lookup, raw-body webhook HMAC, amount checks. |
-| Images       | Locally generated SVG art              | Cloudinary signed uploads via `POST /media/sign`; store `{ url, alt, publicId }`. |
+| Images       | Locally generated SVG art; admin uploads embed a compressed image | Cloudinary signed uploads via `POST /media/sign`; the product form stores `secure_url` and `public_id`. |
 | Auth         | bcrypt + JWT cookie                    | Same cookie flow behind Clerk/Auth0, or keep JWT with a managed secret.          |
 | Email/SMS    | Toast confirmations only               | Transactional email on paid/shipped events (Resend, SES, MSG91).                |
 
@@ -195,6 +195,6 @@ The tokens live in `web/app/globals.css` and are consumed through Tailwind utili
 ## Demo limitations
 
 - Payments never move money and no card data is stored.
-- Email receipts, shipping-carrier tracking and image uploads are simulated.
+- Email receipts and shipping-carrier tracking are simulated. In demo mode, admin image uploads are compressed and embedded in the product record; configure Cloudinary for hosted assets.
 - Data is a single JSON file; run one API instance at a time.
 - Product artwork is abstract SVG generated for the demo, not real photography.

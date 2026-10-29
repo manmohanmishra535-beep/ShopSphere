@@ -51,7 +51,7 @@ export function ToastViewport() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-20 z-[80] flex flex-col items-center gap-2 px-4 md:inset-x-auto md:bottom-auto md:right-6 md:top-6 md:items-end md:px-0"
+      className="pointer-events-none fixed inset-x-0 bottom-20 z-[80] flex flex-col items-center gap-2 px-4 md:inset-x-auto md:bottom-6 md:right-6 md:items-end md:px-0"
       aria-live="polite"
       aria-atomic="false"
     >

@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ImagePlus, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, ImagePlus, Plus, Save, Trash2, Upload } from "lucide-react";
 import type { AdminProduct, Category } from "@/lib/types";
 import { api, ClientApiError, errorMessage } from "@/lib/client";
 import { Button, buttonStyles } from "@/components/ui/button";
@@ -18,6 +18,48 @@ interface VariantRow {
   price: string;
   stock: string;
   threshold: string;
+}
+
+interface MediaSignature {
+  provider: string;
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  folder: string;
+  uploadPreset?: string;
+  signature: string;
+  uploadUrl: string;
+  constraints: { formats: string[]; maxBytes: number };
+  note?: string;
+}
+
+const uploadTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Could not read that image."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function compressForDemo(file: File): Promise<string> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxEdge = 1000;
+    const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas is unavailable.");
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return canvas.toDataURL("image/jpeg", 0.78);
+  } catch {
+    return readAsDataUrl(file);
+  }
 }
 
 function toRupees(paise: number | null | undefined) {
@@ -64,7 +106,20 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
   const [compareAt, setCompareAt] = useState(toRupees(product?.compareAtPrice));
   const [description, setDescription] = useState(product?.description ?? "");
   const [tags, setTags] = useState(product?.tags.join(", ") ?? "");
-  const [imagesText, setImagesText] = useState(product?.images.map((image) => image.url).join("\n") ?? "");
+  const initialImages = product?.images.map((image) => image.url) ?? [];
+  const [imagesText, setImagesText] = useState(() =>
+    initialImages.filter((url) => !url.startsWith("data:")).join("\n")
+  );
+  const [uploadedImages, setUploadedImages] = useState<string[]>(() =>
+    initialImages.filter((url) => url.startsWith("data:"))
+  );
+  const [imagePublicIds, setImagePublicIds] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      (product?.images ?? [])
+        .filter((image) => image.publicId)
+        .map((image) => [image.url, image.publicId!])
+    )
+  );
   const [attributes, setAttributes] = useState<{ key: string; value: string }[]>(
     Object.entries(product?.attributes ?? { material: "", care: "" }).map(([key, value]) => ({ key, value })) || []
   );
@@ -79,11 +134,23 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadNote, setUploadNote] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const images = imagesText
+  const textImageUrls = imagesText
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
+  const imageUrls = [...textImageUrls, ...uploadedImages];
+  const imagesPayload = [
+    ...textImageUrls.map((url) => {
+      const publicId = imagePublicIds[url];
+      return publicId ? { url, alt: title.trim() || "Product image", publicId } : url;
+    }),
+    ...uploadedImages,
+  ];
 
   const updateVariant = <K extends keyof VariantRow>(index: number, key: K, value: VariantRow[K]) => {
     setVariants((current) => current.map((row, i) => (i === index ? { ...row, [key]: value } : row)));
@@ -96,6 +163,75 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
   const fillArtwork = () => {
     const base = slug || slugify(title || "product");
     setImagesText([`/products/${base}-1.svg`, `/products/${base}-2.svg`, `/products/${base}-3.svg`].join("\n"));
+    setUploadedImages([]);
+    setImagePublicIds({});
+    setUploadError("");
+    setUploadNote("");
+  };
+
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadError("");
+    setUploadNote("");
+    setUploading(true);
+    try {
+      const signature = await api<MediaSignature>("/media/sign", {
+        method: "POST",
+        body: { folder: "shopsphere/products" },
+      });
+
+      if (!uploadTypes.includes(file.type)) {
+        throw new Error("Choose a JPG, PNG, WebP or AVIF image.");
+      }
+      if (file.size > signature.constraints.maxBytes) {
+        throw new Error(`Image must be smaller than ${Math.round(signature.constraints.maxBytes / 1024 / 1024)} MB.`);
+      }
+
+      if (signature.provider === "cloudinary-demo") {
+        const dataUrl = await compressForDemo(file);
+        if (dataUrl.length > 900_000) {
+          throw new Error("That image is still too large after compression. Try a smaller file.");
+        }
+        setUploadedImages((current) => [...current, dataUrl]);
+        setUploadNote("Demo mode: the image is compressed and embedded with the product. Configure Cloudinary for hosted uploads.");
+        toast.success("Image added", "Demo mode stores the image with the product.");
+        return;
+      }
+
+      const body = new FormData();
+      body.append("file", file);
+      body.append("api_key", signature.apiKey);
+      body.append("timestamp", String(signature.timestamp));
+      body.append("folder", signature.folder);
+      body.append("signature", signature.signature);
+      if (signature.uploadPreset) body.append("upload_preset", signature.uploadPreset);
+
+      const response = await fetch(signature.uploadUrl, { method: "POST", body });
+      const result = (await response.json().catch(() => null)) as
+        | { secure_url?: string; url?: string; public_id?: string; error?: { message?: string } }
+        | null;
+      if (!response.ok) throw new Error(result?.error?.message ?? "Cloudinary upload failed.");
+      const url = result?.secure_url ?? result?.url;
+      if (!url) throw new Error("Cloudinary did not return an image URL.");
+
+      setImagesText((current) =>
+        [...current.split("\n").map((line) => line.trim()).filter(Boolean), url].join("\n")
+      );
+      if (result?.public_id) {
+        setImagePublicIds((current) => ({ ...current, [url]: result.public_id! }));
+      }
+      setUploadNote("Uploaded to Cloudinary.");
+      toast.success("Image uploaded");
+    } catch (err) {
+      const message = errorMessage(err);
+      setUploadError(message);
+      toast.error("Image upload failed", message);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const submit = async (event: React.FormEvent) => {
@@ -119,7 +255,7 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
       compareAtPrice: compareAt.trim() ? Math.round(Number(compareAt) * 100) : null,
       description: description.trim(),
       tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-      images,
+      images: imagesPayload,
       attributes: Object.fromEntries(attributes.filter((row) => row.key.trim() && row.value.trim()).map((row) => [row.key.trim(), row.value.trim()])),
       variants: variants.map((variant) => ({
         sku: variant.sku.trim(),
@@ -160,7 +296,7 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
     }
   };
 
-  const preview = images[0];
+  const preview = imageUrls[0];
 
   return (
     <form id="product-form" onSubmit={submit}>
@@ -229,9 +365,27 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
                 <h2 className="text-sm font-semibold">Images</h2>
                 <p className="text-[11px] text-muted">One URL per line. The first image is the card image; the second shows on hover.</p>
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={fillArtwork}>
-                <ImagePlus className="h-3.5 w-3.5" /> Use artwork
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  className="hidden"
+                  onChange={handleUpload}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  loading={uploading}
+                >
+                  <Upload className="h-3.5 w-3.5" /> Upload
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={fillArtwork}>
+                  <ImagePlus className="h-3.5 w-3.5" /> Use artwork
+                </Button>
+              </div>
             </div>
             <div className="mt-3 grid gap-4 sm:grid-cols-[1fr_130px]">
               <Textarea
@@ -249,6 +403,37 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
                 )}
               </div>
             </div>
+            {uploadedImages.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {uploadedImages.map((url, index) => (
+                  <div
+                    key={`${index}-${url.slice(0, 24)}`}
+                    className="group relative h-20 w-16 overflow-hidden rounded-lg border border-border bg-surface"
+                  >
+                    <img src={url} alt="" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUploadedImages((current) => current.filter((_, i) => i !== index));
+                        setUploadNote("");
+                        setUploadError("");
+                      }}
+                      className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-black/60 text-white opacity-100 transition-opacity focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                      aria-label="Remove uploaded image"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <p className="mt-2 text-[10px] leading-4 text-muted">
+              JPG, PNG, WebP or AVIF, up to 5 MB.{" "}
+              {uploadNote || "Uploads are hosted on Cloudinary when configured; demo mode embeds a compressed copy."}
+            </p>
+            {uploadError ? (
+              <p className="mt-1 text-[11px] text-danger" role="alert">{uploadError}</p>
+            ) : null}
           </section>
 
           <section className="rounded-xl border border-border bg-bg p-4 sm:p-5">
@@ -393,7 +578,7 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
             <dl className="mt-3 space-y-1.5 border-t border-border pt-3 text-[11px]">
               <div className="flex justify-between"><dt className="text-muted">Variants</dt><dd>{variants.length}</dd></div>
               <div className="flex justify-between"><dt className="text-muted">Total stock</dt><dd>{variants.reduce((sum, variant) => sum + (Number(variant.stock) || 0), 0)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">Images</dt><dd>{images.length}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted">Images</dt><dd>{imageUrls.length}</dd></div>
             </dl>
             <p className="mt-3 text-[10px] leading-4 text-muted">Stock changes made here overwrite on-hand counts. Use Inventory for audit-friendly adjustments.</p>
           </section>
